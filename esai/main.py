@@ -36,6 +36,7 @@ from esai.scoring import ScoreCalculator
 from esai.visualization import RadarChartSimple, ColorbarGenerator
 from esai.report import PDFReporter
 from esai.ui.styles import THEME, TAB_NAMES
+from esai.ui.components import ToolTip, HelpButton
 from esai.tabs.weight_tab import WeightTab
 from esai.tabs.sc_tab import SCTab
 from esai.tabs.sp_tab import SPTab
@@ -234,12 +235,46 @@ class ESAIApplication:
                                 highlightthickness=1)
         self.right_frame.place(relx=0.49, rely=0, relwidth=0.50, relheight=0.82)
         
-        # Title for radar chart
-        title_label = Label(self.right_frame, text="Assessment Overview",
+        # Title bar with help button
+        title_bar = Frame(self.right_frame, bg=self.theme.colors.bg_card)
+        title_bar.pack(fill='x', pady=(8, 2))
+        
+        title_label = Label(title_bar, text="Assessment Overview",
                            font=self.theme.fonts.heading,
                            bg=self.theme.colors.bg_card,
                            fg=self.theme.colors.primary_dark)
-        title_label.pack(pady=(8, 2))
+        title_label.pack(side='left', padx=10)
+        
+        # Add help button
+        help_text = """ESAI Assessment Overview
+
+The radar chart shows your environmental suitability assessment across 8 dimensions:
+
+1. Sample Collection (SC): Evaluate sample collection methods
+2. Sample Preparation (SP): Assess sample preparation processes
+3. Analytical Technique (AT): Evaluate analytical methods used
+4. Reagents: Assess reagent usage and environmental impact
+5. Method Performance: Evaluate method characteristics
+6. Operator Safety: Assess operational safety
+7. Economic: Evaluate cost and resource efficiency
+8. Waste Disposal: Assess waste management practices
+
+Scoring:
+- Each dimension is scored based on weighted criteria
+- Colors indicate greenness: Red (poor) → Yellow → Green (excellent)
+- Total score out of 100 represents overall environmental suitability
+
+How to use:
+1. Set dimension weights in the "Weight" tab
+2. Answer questions in each assessment tab
+3. View real-time updates in the radar chart
+4. Export comprehensive PDF reports
+
+Hover over any element to see tooltips with more information."""
+        
+        help_btn = HelpButton(title_bar, help_text, "ESAI Help")
+        help_btn.pack(side='right', padx=10)
+        ToolTip(help_btn, "Click for help and instructions")
         
         # Create figure for radar chart - ensure full visibility
         self.fig = Figure(figsize=(6, 5.5), dpi=100, facecolor=self.theme.colors.bg_card)
@@ -364,6 +399,9 @@ class ESAIApplication:
                               command=self._export_pdf, **btn_style)
         export_btn.pack(side='left', padx=5)
         
+        # Add tooltip
+        ToolTip(export_btn, "Export assessment results as PDF report\nIncludes radar chart, weights, and detailed scores")
+        
         # Add hover effects
         export_btn.bind('<Enter>', lambda e: export_btn.configure(bg=self.theme.colors.primary_dark))
         export_btn.bind('<Leave>', lambda e: export_btn.configure(bg=self.theme.colors.primary))
@@ -372,6 +410,9 @@ class ESAIApplication:
         colorbar_btn = tk.Button(button_frame, text="🎨 Colorbar",
                                 command=self._show_colorbar, **success_style)
         colorbar_btn.pack(side='left', padx=5)
+        
+        # Add tooltip
+        ToolTip(colorbar_btn, "View color scale legend\nShows greenness levels from red (poor) to green (excellent)")
         
         colorbar_btn.bind('<Enter>', lambda e: colorbar_btn.configure(bg=self.theme.colors.secondary_dark))
         colorbar_btn.bind('<Leave>', lambda e: colorbar_btn.configure(bg=self.theme.colors.success))

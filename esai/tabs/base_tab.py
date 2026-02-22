@@ -11,6 +11,14 @@ from typing import Callable, List, Tuple, Optional, Dict, Any
 from dataclasses import dataclass, field
 import numpy as np
 
+# Import UI components
+try:
+    from esai.ui.components import ToolTip, HelpButton
+except ImportError:
+    # Fallback if components not available
+    ToolTip = None
+    HelpButton = None
+
 
 @dataclass
 class RadioChoice:

@@ -1,0 +1,15 @@
+# ESAI - Environmental Suitability Assessment Index
+# Python package dependencies
+
+# Core GUI framework (usually pre-installed with Python)
+# tkinter - included in standard Python distribution
+
+# Image processing
+Pillow>=10.0.0
+
+# Data processing and visualization
+numpy>=1.24.0
+matplotlib>=3.7.0
+
+# PDF report generation
+reportlab>=4.0.0

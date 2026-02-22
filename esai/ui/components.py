@@ -339,3 +339,210 @@ class ErrorPopup(PopupWindow):
         
         # Bind Enter key
         self.bind('<Return>', lambda e: self.destroy())
+
+
+class ToolTip:
+    """
+    Create a tooltip for a given widget.
+    
+    Shows helpful information when the user hovers over a widget.
+    """
+    
+    def __init__(self, widget, text: str, delay: int = 500):
+        """
+        Initialize the tooltip.
+        
+        Args:
+            widget: Widget to attach tooltip to
+            text: Tooltip text to display
+            delay: Delay in milliseconds before showing tooltip
+        """
+        self.widget = widget
+        self.text = text
+        self.delay = delay
+        self.tooltip_window = None
+        self.schedule_id = None
+        
+        # Bind events
+        self.widget.bind("<Enter>", self._on_enter)
+        self.widget.bind("<Leave>", self._on_leave)
+        self.widget.bind("<ButtonPress>", self._on_leave)
+    
+    def _on_enter(self, event=None):
+        """Schedule tooltip display when mouse enters widget."""
+        self._cancel_schedule()
+        self.schedule_id = self.widget.after(self.delay, self._show_tooltip)
+    
+    def _on_leave(self, event=None):
+        """Hide tooltip when mouse leaves widget."""
+        self._cancel_schedule()
+        self._hide_tooltip()
+    
+    def _cancel_schedule(self):
+        """Cancel scheduled tooltip display."""
+        if self.schedule_id:
+            self.widget.after_cancel(self.schedule_id)
+            self.schedule_id = None
+    
+    def _show_tooltip(self):
+        """Display the tooltip window."""
+        if self.tooltip_window or not self.text:
+            return
+        
+        # Calculate position
+        x = self.widget.winfo_rootx() + 20
+        y = self.widget.winfo_rooty() + self.widget.winfo_height() + 5
+        
+        # Create tooltip window
+        self.tooltip_window = tw = tk.Toplevel(self.widget)
+        tw.wm_overrideredirect(True)
+        tw.wm_geometry(f"+{x}+{y}")
+        
+        # Create label with tooltip text
+        label = tk.Label(
+            tw, text=self.text, justify='left',
+            background="#FFFFE0", foreground="#000000",
+            relief='solid', borderwidth=1,
+            font=('Segoe UI', 9), padx=8, pady=6
+        )
+        label.pack()
+    
+    def _hide_tooltip(self):
+        """Hide the tooltip window."""
+        if self.tooltip_window:
+            self.tooltip_window.destroy()
+            self.tooltip_window = None
+
+
+class HelpButton(tk.Button):
+    """
+    Button that displays help information when clicked.
+    """
+    
+    def __init__(self, parent, help_text: str, help_title: str = "Help",
+                 **kwargs):
+        """
+        Initialize the help button.
+        
+        Args:
+            parent: Parent widget
+            help_text: Help information to display
+            help_title: Title for help dialog
+            **kwargs: Additional Button arguments
+        """
+        self.help_text = help_text
+        self.help_title = help_title
+        
+        # Default styling
+        button_kwargs = {
+            'text': '?',
+            'command': self._show_help,
+            'font': ('Segoe UI', 10, 'bold'),
+            'bg': '#2196F3',
+            'fg': 'white',
+            'activebackground': '#1976D2',
+            'activeforeground': 'white',
+            'relief': 'flat',
+            'cursor': 'hand2',
+            'width': 2,
+            'height': 1
+        }
+        button_kwargs.update(kwargs)
+        
+        super().__init__(parent, **button_kwargs)
+        
+        # Add tooltip
+        ToolTip(self, "Click for help information")
+    
+    def _show_help(self):
+        """Display help dialog."""
+        HelpDialog(self.winfo_toplevel(), self.help_title, self.help_text)
+
+
+class HelpDialog(tk.Toplevel):
+    """
+    Dialog window for displaying help information.
+    """
+    
+    def __init__(self, parent, title: str, message: str):
+        """
+        Initialize the help dialog.
+        
+        Args:
+            parent: Parent window
+            title: Dialog title
+            message: Help message to display
+        """
+        super().__init__(parent)
+        self.title(title)
+        
+        # Window configuration
+        self.configure(bg='#FAFAFA')
+        width = 600
+        height = 400
+        
+        # Center the dialog
+        self.update_idletasks()
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        x = (screen_width - width) // 2
+        y = (screen_height - height) // 2
+        
+        self.geometry(f"{width}x{height}+{x}+{y}")
+        
+        # Main container
+        container = tk.Frame(self, bg='#FAFAFA')
+        container.pack(fill='both', expand=True, padx=20, pady=15)
+        
+        # Title
+        title_label = tk.Label(
+            container, text=title,
+            font=('Segoe UI', 14, 'bold'),
+            fg='#1976D2', bg='#FAFAFA'
+        )
+        title_label.pack(pady=(0, 10))
+        
+        # Create scrollable text area
+        text_frame = tk.Frame(container, bg='#FAFAFA')
+        text_frame.pack(fill='both', expand=True)
+        
+        scrollbar = tk.Scrollbar(text_frame)
+        scrollbar.pack(side='right', fill='y')
+        
+        text_widget = tk.Text(
+            text_frame, wrap='word',
+            font=('Segoe UI', 10),
+            bg='white', fg='#424242',
+            relief='solid', borderwidth=1,
+            padx=10, pady=10,
+            yscrollcommand=scrollbar.set
+        )
+        text_widget.pack(side='left', fill='both', expand=True)
+        scrollbar.config(command=text_widget.yview)
+        
+        # Insert help text
+        text_widget.insert('1.0', message)
+        text_widget.config(state='disabled')  # Make read-only
+        
+        # Close button
+        btn_frame = tk.Frame(container, bg='#FAFAFA')
+        btn_frame.pack(pady=(10, 0))
+        
+        close_btn = tk.Button(
+            btn_frame, text="Close", command=self.destroy,
+            font=('Segoe UI', 10),
+            bg='#2196F3', fg='white',
+            activebackground='#1976D2',
+            activeforeground='white',
+            relief='flat', cursor='hand2',
+            padx=30, pady=5
+        )
+        close_btn.pack()
+        
+        # Bind Escape key
+        self.bind('<Escape>', lambda e: self.destroy())
+        
+        # Grab focus
+        self.grab_set()
+        self.focus_set()
+
