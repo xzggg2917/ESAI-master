@@ -282,14 +282,14 @@ class RadarChart:
         fontweight = 100
         
         # Total score in center
-        self.ax.text(0, 0, total_score, ha='center', va='center',
+        self.ax.text(0, 0, f'{total_score:.2f}', ha='center', va='center',
                     fontsize=20, fontfamily='Times New Roman')
         
         # Dimension scores
         score_positions = self._get_score_positions()
         for dim, pos in score_positions.items():
             score = dimension_scores.get(dim, 0)
-            self.ax.text(pos[0], pos[1], score, ha='center', va='center',
+            self.ax.text(pos[0], pos[1], f'{score:.2f}', ha='center', va='center',
                         fontsize=13, fontfamily='Times New Roman')
         
         # Dimension labels
@@ -426,16 +426,15 @@ class RadarChartSimple:
         self.ax = ax
         self.colormap = colormap
     
-    def draw(self, principle_colors: Dict[int, float], weights: Dict[str, float], 
+    def draw(self, principle_colors: Dict[int, float], 
              total_score: float, dimension_scores: Dict[str, float] = None):
         """
         Draw the radar chart on the axis.
         
         Args:
             principle_colors: Dictionary mapping principle ID to color value (0-1)
-            weights: Dictionary of dimension weights
-            total_score: Total ESAI score
-            dimension_scores: Dictionary of dimension scores (optional)
+            total_score: Total ESAI score (sum of all dimensions)
+            dimension_scores: Dictionary of dimension scores (sum of principles)
         """
         from matplotlib.patches import Circle, Wedge, Polygon
         
@@ -455,16 +454,6 @@ class RadarChartSimple:
         
         # Draw dimension sectors (8 wedges)
         dimension_order = ['SP', 'SC', 'Waste', 'Reagent', 'Operator', 'Method', 'Economy', 'AT']
-        weight_map = {
-            'SC': weights.get('w1', 0.1),
-            'SP': weights.get('w2', 0.2),
-            'AT': weights.get('w3', 0.2),
-            'Economy': weights.get('w4', 0.05),
-            'Method': weights.get('w5', 0.05),
-            'Operator': weights.get('w6', 0.1),
-            'Reagent': weights.get('w7', 0.1),
-            'Waste': weights.get('w8', 0.2)
-        }
         
         angle = 360 / 8
         for i, dim in enumerate(dimension_order):
@@ -568,7 +557,7 @@ class RadarChartSimple:
     def _add_labels(self, total_score: float, dimension_scores: Dict[str, float] = None):
         """Add text labels."""
         # Total score in center
-        self.ax.text(0, 0, f'{total_score}', ha='center', va='center',
+        self.ax.text(0, 0, f'{total_score:.2f}', ha='center', va='center',
                     fontsize=16, fontfamily='Times New Roman')
         
         # Dimension scores (in inner sectors)
@@ -586,7 +575,7 @@ class RadarChartSimple:
             
             for dim, pos in score_positions.items():
                 score = dimension_scores.get(dim, 0)
-                self.ax.text(pos[0], pos[1], f'{score:.1f}', ha='center', va='center',
+                self.ax.text(pos[0], pos[1], f'{score:.2f}', ha='center', va='center',
                             fontsize=13, fontfamily='Times New Roman')
         
         # Dimension labels (outer ring)

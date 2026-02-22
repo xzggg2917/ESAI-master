@@ -90,16 +90,22 @@ class OperatorTab(BaseTab):
         factors_frame = Frame(info_card, bg=bg_card)
         factors_frame.pack(fill='x', padx=10)
         
+        # Bold font for safety factors
+        if self.theme:
+            bold_font = (self.theme.fonts.family, self.theme.fonts.size_small, 'bold')
+        else:
+            bold_font = ('Segoe UI', 10, 'bold')
+        
         for factor in factors:
             if self.theme:
                 bullet = Label(factors_frame, text='• ' + factor,
-                             font=self.small_font,
+                             font=bold_font,
                              fg=self.theme.colors.text_secondary,
                              bg=bg_card,
                              anchor='w')
             else:
                 bullet = Label(factors_frame, text='• ' + factor,
-                             font=self.small_font,
+                             font=bold_font,
                              bg=bg_card,
                              anchor='w')
             bullet.pack(anchor='w', pady=1)
@@ -207,10 +213,10 @@ class OperatorTab(BaseTab):
         Calculate the weighted dimension score.
         
         Args:
-            weight: Weight for this dimension (w6)
+            weight: Weight for this dimension
             
         Returns:
-            Weighted sum of principle scores
+            Sum of principle scores multiplied by weight
         """
         total = sum(self.scores[p].get() for p in self.PRINCIPLES)
         return round(total * weight, 2)

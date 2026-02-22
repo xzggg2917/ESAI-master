@@ -1,0 +1,8 @@
+﻿ESAI v1.0.0 - SHA256 Checksums
+Generated: 2026-02-22 15:24:19
+==========================================
+
+Portable Version:
+File: ESAI-v1.0.0-Portable-Windows.zip
+SHA256: 12FAB95DD535F4BBC1921E2F53523371B308F03CD960CA389DD4E5518D7E985F
+

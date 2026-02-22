@@ -205,10 +205,10 @@ class EconomyTab(BaseTab):
         Calculate the weighted dimension score.
         
         Args:
-            weight: Weight for this dimension (w4)
+            weight: Weight for this dimension
             
         Returns:
-            Weighted sum of principle scores
+            Sum of principle scores multiplied by weight
         """
         total = sum(self.scores[p].get() for p in self.PRINCIPLES)
         return round(total * weight, 2)

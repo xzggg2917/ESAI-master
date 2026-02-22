@@ -32,7 +32,7 @@ class SCTab(BaseTab):
                  on_update: Callable = None,
                  font_style: Tuple[str, int] = ('Segoe UI', 11),
                  theme=None):
-        super().__init__(parent, notebook, ' SC (1-4) ', on_update, font_style, theme)
+        super().__init__(parent, notebook, ' SC ', on_update, font_style, theme)
     
     def _setup_content(self):
         """Setup the Sample Collection tab content."""
@@ -120,10 +120,10 @@ class SCTab(BaseTab):
         Calculate the weighted dimension score.
         
         Args:
-            weight: Weight for this dimension (w1)
+            weight: Weight for this dimension
             
         Returns:
-            Weighted sum of principle scores
+            Sum of principle scores multiplied by weight
         """
         total = sum(self.scores[p].get() for p in self.PRINCIPLES)
         return round(total * weight, 2)

@@ -87,15 +87,15 @@ class ESAIApplication:
         self.root.title("ESAI - Environmental Suitability Assessment Index")
         
         # Set window size and position (larger for better layout)
-        window_width = 1200
-        window_height = 680
+        window_width = 1240
+        window_height = 720
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
         x = (screen_width - window_width) // 2
         y = (screen_height - window_height) // 2 - 30
         
         self.root.geometry(f"{window_width}x{window_height}+{x}+{y}")
-        self.root.minsize(1100, 620)
+        self.root.minsize(1200, 680)
         
         # Set icon
         try:
@@ -199,9 +199,15 @@ class ESAIApplication:
         self.font_style = self.theme.fonts.body
         self.title_font = self.theme.fonts.title
         
-        # Main container with padding
+        # Main container with grid layout for responsive design
         self.main_container = Frame(self.root, bg=self.theme.colors.bg_main)
         self.main_container.pack(fill='both', expand=True, padx=10, pady=10)
+        
+        # Configure grid weights for responsive layout
+        self.main_container.rowconfigure(0, weight=82)  # Top area (tabs + chart)
+        self.main_container.rowconfigure(1, weight=18)  # Bottom panel (scores)
+        self.main_container.columnconfigure(0, weight=48)  # Left frame (tabs)
+        self.main_container.columnconfigure(1, weight=52)  # Right frame (chart)
         
         # Create main frames
         self._create_left_frame()
@@ -217,7 +223,7 @@ class ESAIApplication:
     def _create_left_frame(self):
         """Create the left frame containing tabs."""
         self.left_frame = Frame(self.main_container, bg=self.theme.colors.bg_main)
-        self.left_frame.place(relx=0, rely=0, relwidth=0.48, relheight=0.82)
+        self.left_frame.grid(row=0, column=0, sticky='nsew', padx=(0, 5))
         
         # Create styled notebook
         style = ttk.Style()
@@ -233,7 +239,7 @@ class ESAIApplication:
         self.right_frame = Frame(self.main_container, bg=self.theme.colors.bg_card,
                                 highlightbackground=self.theme.colors.border,
                                 highlightthickness=1)
-        self.right_frame.place(relx=0.49, rely=0, relwidth=0.50, relheight=0.82)
+        self.right_frame.grid(row=0, column=1, sticky='nsew', padx=(5, 0))
         
         # Title bar with help button
         title_bar = Frame(self.right_frame, bg=self.theme.colors.bg_card)
@@ -289,7 +295,7 @@ Hover over any element to see tooltips with more information."""
     def _create_bottom_panel(self):
         """Create the bottom panel with scores and buttons."""
         self.bottom_panel = Frame(self.main_container, bg=self.theme.colors.bg_main)
-        self.bottom_panel.place(relx=0, rely=0.83, relwidth=1, relheight=0.17)
+        self.bottom_panel.grid(row=1, column=0, columnspan=2, sticky='nsew', pady=(10, 0))
         
         # Score panel on the left
         self._create_score_panel()
@@ -313,7 +319,7 @@ Hover over any element to see tooltips with more information."""
                            highlightthickness=1)
         total_frame.pack()
         
-        self.total_var = tk.DoubleVar(value=0.0)
+        self.total_var = tk.StringVar(value='0.00')
         
         Label(total_frame, text='TOTAL', 
              font=(self.theme.fonts.family, 8, 'bold'),
@@ -346,15 +352,17 @@ Hover over any element to see tooltips with more information."""
             ('Waste', '#009688')
         ]
         
-        # Configure grid
+        # Configure grid for 2 rows x 4 columns
         for i in range(4):
             dims_container.columnconfigure(i, weight=1, uniform='dim')
+        for i in range(2):
+            dims_container.rowconfigure(i, weight=1, uniform='row')
         
         for idx, (dim_key, color) in enumerate(dimensions):
             row = idx // 4
             col = idx % 4
             
-            var = tk.DoubleVar(value=0.0)
+            var = tk.StringVar(value='0.00')
             self.dimension_vars[dim_key] = var
             
             # Compact card
@@ -528,12 +536,28 @@ Hover over any element to see tooltips with more information."""
         
         return colors
     
+    def _collect_principle_scores(self) -> Dict[int, float]:
+        """Collect all principle scores (raw scores, not weighted) from tabs."""
+        scores = {}
+        
+        tabs = [
+            self.sc_tab, self.sp_tab, self.at_tab,
+            self.economy_tab, self.method_tab, self.operator_tab,
+            self.reagent_tab, self.waste_tab
+        ]
+        
+        for tab in tabs:
+            for p_id in tab.PRINCIPLES:
+                scores[p_id] = tab.scores[p_id].get()
+        
+        return scores
+    
     def _update_display(self):
         """Update the display with current scores."""
-        # Get weights
+        # Get weights from Settings tab
         weights = self.weight_tab.get_weights()
         
-        # Calculate dimension scores
+        # Calculate dimension scores (sum of principle scores × weight)
         sc_score = self.sc_tab.get_dimension_score(weights['w1'])
         sp_score = self.sp_tab.get_dimension_score(weights['w2'])
         at_score = self.at_tab.get_dimension_score(weights['w3'])
@@ -543,20 +567,20 @@ Hover over any element to see tooltips with more information."""
         reagent_score = self.reagent_tab.get_dimension_score(weights['w7'])
         waste_score = self.waste_tab.get_dimension_score(weights['w8'])
         
-        # Update dimension displays
-        self.dimension_vars['Sample collection'].set(sc_score)
-        self.dimension_vars['Sample preparation'].set(sp_score)
-        self.dimension_vars['Analytical techniques'].set(at_score)
-        self.dimension_vars['Economy'].set(economy_score)
-        self.dimension_vars['Method'].set(method_score)
-        self.dimension_vars['Operator'].set(operator_score)
-        self.dimension_vars['Reagent'].set(reagent_score)
-        self.dimension_vars['Waste'].set(waste_score)
+        # Update dimension displays with 2 decimal places
+        self.dimension_vars['Sample collection'].set(f'{sc_score:.2f}')
+        self.dimension_vars['Sample preparation'].set(f'{sp_score:.2f}')
+        self.dimension_vars['Analytical techniques'].set(f'{at_score:.2f}')
+        self.dimension_vars['Economy'].set(f'{economy_score:.2f}')
+        self.dimension_vars['Method'].set(f'{method_score:.2f}')
+        self.dimension_vars['Operator'].set(f'{operator_score:.2f}')
+        self.dimension_vars['Reagent'].set(f'{reagent_score:.2f}')
+        self.dimension_vars['Waste'].set(f'{waste_score:.2f}')
         
-        # Calculate total
+        # Calculate total with 2 decimal places
         total = round(sc_score + sp_score + at_score + economy_score + 
                      method_score + operator_score + reagent_score + waste_score, 2)
-        self.total_var.set(total)
+        self.total_var.set(f'{total:.2f}')
         
         # Update radar chart
         self._update_radar_chart(weights)
@@ -566,7 +590,7 @@ Hover over any element to see tooltips with more information."""
         # Get colors for each principle
         colors = self._collect_colors()
         
-        # Calculate dimension scores
+        # Calculate dimension scores (weighted)
         dimension_scores = {
             'SC': self.sc_tab.get_dimension_score(weights['w1']),
             'SP': self.sp_tab.get_dimension_score(weights['w2']),
@@ -578,9 +602,9 @@ Hover over any element to see tooltips with more information."""
             'Waste': self.waste_tab.get_dimension_score(weights['w8'])
         }
         
-        # Create radar chart
+        # Create radar chart (convert total from string to float)
         radar = RadarChartSimple(self.ax, self.colormap)
-        radar.draw(colors, weights, self.total_var.get(), dimension_scores)
+        radar.draw(colors, float(self.total_var.get()), dimension_scores)
         
         self.canvas.draw()
     

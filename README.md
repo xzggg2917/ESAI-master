@@ -15,6 +15,9 @@ A comprehensive software tool for evaluating the environmental suitability and g
 - [Usage](#usage)
   - [Quick Start](#quick-start)
   - [GUI Overview](#gui-overview)
+- [Building and Packaging](#building-and-packaging)
+  - [Creating Standalone Executable](#creating-standalone-executable)
+  - [Creating Windows Installer](#creating-windows-installer)
 - [Documentation](#documentation)
 - [Dependencies](#dependencies)
 - [License](#license)
@@ -178,7 +181,75 @@ The application consists of the following tabs:
 - **Real-time visualization**: Radar chart updates as you input data
 - **Export function**: Generate comprehensive PDF reports
 
-## 📚 Documentation
+## � Building and Packaging
+
+### Creating Standalone Executable
+
+Build a portable Windows executable that doesn't require Python installation:
+
+**On Windows:**
+```powershell
+.\build.ps1
+```
+
+**On Linux/macOS:**
+```bash
+chmod +x build.sh
+./build.sh
+```
+
+The executable will be created in `dist/ESAI/ESAI.exe`
+
+**Features:**
+- ✅ No Python installation required on target system
+- ✅ All dependencies bundled
+- ✅ English-only interface (locale-independent)
+- ✅ Portable - runs from any directory
+
+### Creating Windows Installer
+
+Create a professional installer with English-only interface:
+
+**Automated Build & Package:**
+```powershell
+.\build_and_package.ps1
+```
+
+This script will:
+1. Build the standalone executable
+2. Create a Windows installer (if Inno Setup is installed)
+
+**Manual Installer Creation:**
+
+If you need to customize the installer:
+
+1. **Install Inno Setup**: Download from [jrsoftware.org/isdl.php](https://jrsoftware.org/isdl.php)
+
+2. **Build executable first**: Run `build.ps1`
+
+3. **Compile installer**:
+   ```powershell
+   & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
+   ```
+
+The installer will be created in `installer_output/ESAI-Setup-v1.0.0.exe`
+
+**Installer Features:**
+- ✅ **English-only interface** (not system-language dependent)
+- ✅ Modern wizard-style installation
+- ✅ Desktop shortcut option
+- ✅ Start menu integration
+- ✅ Uninstaller included
+- ✅ MIT License agreement
+- ✅ Professional appearance
+
+**Distribution Options:**
+1. **Portable**: `dist/ESAI/ESAI.exe` - No installation required
+2. **Installer**: `installer_output/ESAI-Setup-v1.0.0.exe` - Standard Windows installation
+
+For detailed instructions, see [CREATE_INSTALLER.md](CREATE_INSTALLER.md)
+
+## �📚 Documentation
 
 ### File Structure
 

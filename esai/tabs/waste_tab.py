@@ -77,7 +77,7 @@ class WasteTab(BaseTab):
         title_label.pack(anchor='w', pady=(0, 10))
         
         # Initialize variables
-        self._init_score_vars(26, 'No direct emissions of greenhouse or toxic gases')
+        self._init_score_vars(26, 'Emissions of toxic gases')
         
         # Options container
         options_frame = Frame(card, bg=bg_card)
@@ -85,9 +85,9 @@ class WasteTab(BaseTab):
         
         choices = [
             ('Emissions of toxic gases', 0, 0.0),
-            ('Significant emissions of greenhouse gases', 2.5, 0.33),
-            ('Minor or controlled emissions of greenhouse gases', 5, 0.66),
-            ('No direct emissions of greenhouse or toxic gases', 10, 1.0),
+            ('Significant emissions of greenhouse gases', 12.5, 0.33),
+            ('Minor or controlled emissions of greenhouse gases', 25, 0.66),
+            ('No direct emissions of greenhouse or toxic gases', 50, 1.0),
         ]
         
         for i, (text, score, color) in enumerate(choices):
@@ -185,8 +185,8 @@ class WasteTab(BaseTab):
         
         choices = [
             ('0-25%', 0, 0.0),
-            ('25-50%', 12.5, 1.0),
-            ('50-75%', 25, 0.0),
+            ('25-50%', 12.5, 0.33),
+            ('50-75%', 25, 0.66),
             ('75-100%', 50, 1.0),
         ]
         
@@ -241,10 +241,10 @@ class WasteTab(BaseTab):
         Calculate the weighted dimension score.
         
         Args:
-            weight: Weight for this dimension (w8)
+            weight: Weight for this dimension
             
         Returns:
-            Weighted sum of principle scores
+            Sum of principle scores multiplied by weight
         """
         total = sum(self.scores[p].get() for p in self.PRINCIPLES)
         return round(total * weight, 2)
