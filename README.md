@@ -5,9 +5,6 @@
 
 A comprehensive software tool for evaluating the environmental suitability and greenness of analytical methods based on Green Analytical Chemistry (GAC) principles.
 
-> **中文文档**: 查看 [README-CN.md](README-CN.md) 获取中文版本文档  
-> **Chinese Version**: See [README-CN.md](README-CN.md) for Chinese documentation
-
 ## 📋 Table of Contents
 
 - [Overview](#overview)
