@@ -26,7 +26,7 @@ def test_with_locale(locale_setting):
         # Try to import and check if it crashes
         result = subprocess.run(
             [sys.executable, '-c', 
-             'import ESAI; print("SUCCESS: Application imports without crashing")'],
+             'from esai.main import main; print("SUCCESS: Application imports without crashing")'],
             env=env,
             capture_output=True,
             text=True,

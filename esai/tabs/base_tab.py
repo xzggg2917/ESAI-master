@@ -128,8 +128,17 @@ class BaseTab(Frame):
         self.content_frame.bind("<Configure>", self._on_frame_configure)
         self.canvas.bind("<Configure>", self._on_canvas_configure)
         
-        # Enable mouse wheel scrolling
+        # Enable mouse wheel scrolling when mouse is over the canvas
+        self.canvas.bind("<Enter>", self._bind_mousewheel)
+        self.canvas.bind("<Leave>", self._unbind_mousewheel)
+    
+    def _bind_mousewheel(self, event):
+        """Bind mouse wheel when entering canvas."""
         self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)
+    
+    def _unbind_mousewheel(self, event):
+        """Unbind mouse wheel when leaving canvas."""
+        self.canvas.unbind_all("<MouseWheel>")
     
     def _on_frame_configure(self, event):
         """Update scroll region when content changes."""
@@ -362,15 +371,8 @@ class BaseTab(Frame):
         input_frame = Frame(card, bg=bg_card)
         input_frame.pack(fill='x', pady=(5, 5))
         
-        # Unit label
-        if hasattr(config, 'entry_unit') and config.entry_unit:
-            unit_label = Label(input_frame, text=f"Unit: {config.entry_unit}",
-                             font=self.small_font,
-                             fg=self.theme.colors.text_secondary if self.theme else 'gray',
-                             bg=bg_card)
-            unit_label.pack(anchor='w', padx=5, pady=(0, 5))
-        
-        # Entry field with modern styling
+        # Entry field with modern styling and placeholder
+        placeholder_text = f"Unit: {config.entry_unit}" if hasattr(config, 'entry_unit') and config.entry_unit else ""
         entry_var = StringVar(value=config.entry_default or "")
         
         def validate_entry_text(text):
@@ -404,9 +406,35 @@ class BaseTab(Frame):
                          justify='center', font=self.small_font, width=20)
         entry.pack(pady=5)
         
+        # Add placeholder functionality
+        if placeholder_text:
+            placeholder_color = self.theme.colors.text_secondary if self.theme else 'gray'
+            normal_color = self.theme.colors.text_primary if self.theme else 'black'
+            
+            def on_focus_in(event):
+                if entry_var.get() == placeholder_text:
+                    entry_var.set('')
+                    entry.config(fg=normal_color)
+            
+            def on_focus_out(event):
+                if entry_var.get() == '':
+                    entry_var.set(placeholder_text)
+                    entry.config(fg=placeholder_color)
+            
+            entry.bind('<FocusIn>', on_focus_in)
+            entry.bind('<FocusOut>', on_focus_out)
+            
+            # Set initial placeholder if empty
+            if not entry_var.get():
+                entry_var.set(placeholder_text)
+                entry.config(fg=placeholder_color)
+        
         # Calculate button with modern styling
         def handle_value():
             text = entry_var.get()
+            # Ignore placeholder text
+            if text == placeholder_text:
+                text = ''
             if not text:
                 value = 0
             else:

@@ -77,15 +77,17 @@ class WasteTab(BaseTab):
         title_label.pack(anchor='w', pady=(0, 10))
         
         # Initialize variables
-        self._init_score_vars(26, 'Yes')
+        self._init_score_vars(26, 'No direct emissions of greenhouse or toxic gases')
         
         # Options container
         options_frame = Frame(card, bg=bg_card)
         options_frame.pack(fill='x', pady=(5, 0))
         
         choices = [
-            ('Yes', 0, 0.0),
-            ('No', 50, 1.0),
+            ('Emissions of toxic gases', 0, 0.0),
+            ('Significant emissions of greenhouse gases', 2.5, 0.33),
+            ('Minor or controlled emissions of greenhouse gases', 5, 0.66),
+            ('No direct emissions of greenhouse or toxic gases', 10, 1.0),
         ]
         
         for i, (text, score, color) in enumerate(choices):

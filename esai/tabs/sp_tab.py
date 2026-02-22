@@ -157,20 +157,27 @@ class SPTab(BaseTab):
         self._step_text = '≤2 steps'
         self._auto_text = 'Fully automatic'
         
-        # Steps section
+        # Create horizontal layout container for both sections
+        horizontal_container = Frame(card, bg=bg_card)
+        horizontal_container.pack(fill='x', pady=(5, 0))
+        
+        # Left side: Steps section
+        left_section = Frame(horizontal_container, bg=bg_card)
+        left_section.pack(side='left', fill='both', expand=True, padx=(0, 15))
+        
         if self.theme:
-            steps_label = Label(card, text='Number of steps:',
+            steps_label = Label(left_section, text='Number of steps:',
                               font=self.small_font,
                               fg=self.theme.colors.text_secondary,
                               bg=bg_card)
         else:
-            steps_label = Label(card, text='Number of steps:',
+            steps_label = Label(left_section, text='Number of steps:',
                               font=self.small_font,
                               bg=bg_card)
-        steps_label.pack(anchor='w', pady=(5, 2))
+        steps_label.pack(anchor='w', pady=(0, 5))
         
-        steps_frame = Frame(card, bg=bg_card)
-        steps_frame.pack(fill='x', pady=(0, 10))
+        steps_frame = Frame(left_section, bg=bg_card)
+        steps_frame.pack(fill='x')
         
         # Step options
         step_choices = [
@@ -223,19 +230,22 @@ class SPTab(BaseTab):
             
             btn.config(command=make_step_callback())
         
-        # Automation section
+        # Right side: Automation section
+        right_section = Frame(horizontal_container, bg=bg_card)
+        right_section.pack(side='left', fill='both', expand=True)
+        
         if self.theme:
-            auto_label = Label(card, text='Degree of automation:',
+            auto_label = Label(right_section, text='Degree of automation:',
                              font=self.small_font,
                              fg=self.theme.colors.text_secondary,
                              bg=bg_card)
         else:
-            auto_label = Label(card, text='Degree of automation:',
+            auto_label = Label(right_section, text='Degree of automation:',
                              font=self.small_font,
                              bg=bg_card)
-        auto_label.pack(anchor='w', pady=(0, 2))
+        auto_label.pack(anchor='w', pady=(0, 5))
         
-        auto_frame = Frame(card, bg=bg_card)
+        auto_frame = Frame(right_section, bg=bg_card)
         auto_frame.pack(fill='x')
         
         # Automation options

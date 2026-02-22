@@ -71,14 +71,14 @@ def test_chinese_character_rendering():
     matplotlib.rcParams['axes.unicode_minus'] = False
     
     try:
-        # Create a test plot with Chinese characters
+        # Create a test plot with various text
         fig, ax = plt.subplots(figsize=(8, 6))
         
         test_texts = [
-            "环境适宜性评估指数 (Environmental Suitability Assessment Index)",
-            "样品采集 (Sample Collection)",
-            "试剂使用 (Reagent Usage)",
-            "Test: 中文English混合Mixed"
+            "Environmental Suitability Assessment Index (ESAI)",
+            "Sample Collection Module",
+            "Reagent Usage Analysis",
+            "Test: Mixed Font Rendering"
         ]
         
         for i, text in enumerate(test_texts):

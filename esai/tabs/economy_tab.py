@@ -82,15 +82,8 @@ class EconomyTab(BaseTab):
         input_frame = Frame(card, bg=bg_card)
         input_frame.pack(fill='x', pady=(5, 5))
         
-        # Unit label
-        if self.theme:
-            unit_label = Label(input_frame, text='Unit: USD',
-                             font=self.small_font,
-                             fg=self.theme.colors.text_secondary,
-                             bg=bg_card)
-            unit_label.pack(anchor='w', padx=5, pady=(0, 5))
-        
-        # Entry field
+        # Entry field with placeholder
+        placeholder_text = 'Unit: USD'
         entry_var = StringVar(value="")
         
         def validate_entry_text(text):
@@ -124,8 +117,33 @@ class EconomyTab(BaseTab):
                          justify='center', font=self.small_font, width=20)
         entry.pack(pady=5)
         
+        # Add placeholder functionality
+        placeholder_color = self.theme.colors.text_secondary if self.theme else 'gray'
+        normal_color = self.theme.colors.text_primary if self.theme else 'black'
+        
+        def on_focus_in(event):
+            if entry_var.get() == placeholder_text:
+                entry_var.set('')
+                entry.config(fg=normal_color)
+        
+        def on_focus_out(event):
+            if entry_var.get() == '':
+                entry_var.set(placeholder_text)
+                entry.config(fg=placeholder_color)
+        
+        entry.bind('<FocusIn>', on_focus_in)
+        entry.bind('<FocusOut>', on_focus_out)
+        
+        # Set initial placeholder
+        if not entry_var.get():
+            entry_var.set(placeholder_text)
+            entry.config(fg=placeholder_color)
+        
         def handle_value():
             text = entry_var.get()
+            # Ignore placeholder text
+            if text == placeholder_text:
+                text = ''
             if text == '':
                 value = 0
             else:
