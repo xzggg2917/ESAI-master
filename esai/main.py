@@ -97,10 +97,17 @@ class ESAIApplication:
         self.root.geometry(f"{window_width}x{window_height}+{x}+{y}")
         self.root.minsize(1350, 700)
         
-        # Set icon
+        # Set icon (use both methods for better compatibility)
         try:
             icon_path = get_resource_path("logo.ico")
+            # Method 1: iconbitmap for file icon
             self.root.iconbitmap(icon_path)
+            # Method 2: iconphoto for window icon (more reliable on some Windows versions)
+            icon_img = Image.open(icon_path)
+            icon_photo = ImageTk.PhotoImage(icon_img)
+            self.root.iconphoto(True, icon_photo)
+            # Keep reference to prevent garbage collection
+            self.root._icon_photo = icon_photo
         except Exception as e:
             print(f"Warning: Could not load icon: {e}")
         
