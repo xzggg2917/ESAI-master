@@ -6,7 +6,7 @@ This module provides the base class for all assessment tabs.
 """
 
 import tkinter as tk
-from tkinter import ttk, Frame, Label, Radiobutton, Entry, Button, StringVar, DoubleVar, messagebox
+from tkinter import ttk, Frame, Label, Text, Radiobutton, Entry, Button, StringVar, DoubleVar, messagebox
 from typing import Callable, List, Tuple, Optional, Dict, Any
 from dataclasses import dataclass, field
 import numpy as np
@@ -119,8 +119,8 @@ class BaseTab(Frame):
             self.content_frame.configure(bg=self.bg_color)
         
         # Configure grid columns to have equal weight for better layout
-        self.content_frame.columnconfigure(0, weight=1)
-        self.content_frame.columnconfigure(1, weight=1)
+        self.content_frame.columnconfigure(0, weight=1, uniform='col')
+        self.content_frame.columnconfigure(1, weight=1, uniform='col')
         
         # Configure canvas
         self.canvas.configure(yscrollcommand=scrollbar.set)
@@ -224,7 +224,7 @@ class BaseTab(Frame):
         card = Frame(parent, bg=bg_card, 
                     highlightbackground=border_color,
                     highlightthickness=1,
-                    padx=12, pady=10)
+                    padx=10, pady=10)
         
         # Question number badge
         if self.theme:
@@ -239,19 +239,27 @@ class BaseTab(Frame):
         # Title
         title_text = config.title
         if self.theme:
-            title_label = Label(card, text=title_text, 
-                              font=self.title_font,
-                              fg=self.theme.colors.text_primary,
-                              bg=bg_card,
-                              wraplength=280,
-                              justify='left')
+            title_label = Text(card,
+                             font=self.title_font,
+                             fg=self.theme.colors.text_primary,
+                             bg=bg_card,
+                             height=2,
+                             wrap='word',
+                             relief='flat',
+                             highlightthickness=0,
+                             cursor='arrow')
         else:
-            title_label = Label(card, text=title_text, 
-                              font=self.font_style,
-                              bg=bg_card,
-                              wraplength=280,
-                              justify='left')
-        title_label.pack(anchor='w', pady=(0, 10))
+            title_label = Text(card,
+                             font=self.font_style,
+                             bg=bg_card,
+                             height=2,
+                             wrap='word',
+                             relief='flat',
+                             highlightthickness=0,
+                             cursor='arrow')
+        title_label.insert('1.0', title_text)
+        title_label.config(state='disabled')
+        title_label.pack(fill='x', pady=(0, 10))
         
         # Initialize variables
         default_pdf = config.choices[0].pdf_text if config.choices else ""
@@ -312,7 +320,7 @@ class BaseTab(Frame):
             btn.config(command=make_callback())
             buttons.append(btn)
         
-        card.grid(row=row, column=column, sticky='new', pady=5, padx=5)
+        card.grid(row=row, column=column, sticky='ew', pady=5, padx=5)
         return card
     
     def create_entry_question(self, parent: Frame, config: QuestionConfig,
@@ -343,7 +351,7 @@ class BaseTab(Frame):
         card = Frame(parent, bg=bg_card,
                     highlightbackground=border_color,
                     highlightthickness=1,
-                    padx=12, pady=10)
+                    padx=10, pady=10)
         
         # Question number badge
         if self.theme:
@@ -358,19 +366,27 @@ class BaseTab(Frame):
         # Title
         title_text = config.title
         if self.theme:
-            label = Label(card, text=title_text, 
-                         font=self.title_font,
-                         fg=self.theme.colors.text_primary,
-                         bg=bg_card,
-                         wraplength=280,
-                         justify='left')
+            label = Text(card,
+                       font=self.title_font,
+                       fg=self.theme.colors.text_primary,
+                       bg=bg_card,
+                       height=2,
+                       wrap='word',
+                       relief='flat',
+                       highlightthickness=0,
+                       cursor='arrow')
         else:
-            label = Label(card, text=title_text, 
-                         font=self.font_style,
-                         bg=bg_card,
-                         wraplength=280,
-                         justify='left')
-        label.pack(anchor='w', pady=(0, 10))
+            label = Text(card,
+                       font=self.font_style,
+                       bg=bg_card,
+                       height=2,
+                       wrap='word',
+                       relief='flat',
+                       highlightthickness=0,
+                       cursor='arrow')
+        label.insert('1.0', title_text)
+        label.config(state='disabled')
+        label.pack(fill='x', pady=(0, 10))
         
         # Initialize variables
         self._init_score_vars(config.id, config.entry_default)
@@ -489,7 +505,7 @@ class BaseTab(Frame):
         # Add Enter key binding
         entry.bind('<Return>', lambda e: handle_value())
         
-        card.grid(row=row, column=column, sticky='new', pady=5, padx=5)
+        card.grid(row=row, column=column, sticky='ew', pady=5, padx=5)
         return card
 
 

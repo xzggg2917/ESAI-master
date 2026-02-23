@@ -87,15 +87,15 @@ class ESAIApplication:
         self.root.title("ESAI - Environmental Suitability Assessment Index")
         
         # Set window size and position (larger for better layout)
-        window_width = 1240
-        window_height = 720
+        window_width = 1450
+        window_height = 750
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
         x = (screen_width - window_width) // 2
         y = (screen_height - window_height) // 2 - 30
         
         self.root.geometry(f"{window_width}x{window_height}+{x}+{y}")
-        self.root.minsize(1200, 680)
+        self.root.minsize(1350, 700)
         
         # Set icon
         try:
